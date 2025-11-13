@@ -1,0 +1,27 @@
+package com.example.ecommerce_backend.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "customer_addresses")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CustomerAddress {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    private String province;
+    private String district;
+    private String ward;
+    private String detail;
+
+    private Boolean isDefault;
+}
