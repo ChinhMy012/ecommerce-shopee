@@ -56,7 +56,10 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid username/email or password");
         }
 
-        String token = jwtService.generateToken(user.getUsername());
-        return new AuthResponse(token, "Bearer");
+        // Tạo access token + refresh token
+        String accessToken = jwtService.generateToken(user.getUsername());
+        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+
+        return new AuthResponse(accessToken, refreshToken);
     }
 }
