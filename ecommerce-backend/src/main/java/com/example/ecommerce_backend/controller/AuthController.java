@@ -3,12 +3,18 @@ package com.example.ecommerce_backend.controller;
 import com.example.ecommerce_backend.dto.request.LoginRequest;
 import com.example.ecommerce_backend.dto.request.RegisterRequest;
 import com.example.ecommerce_backend.dto.response.AuthResponse;
+import com.example.ecommerce_backend.entity.Permission;
+import com.example.ecommerce_backend.entity.User;
+import com.example.ecommerce_backend.repository.UserRepository;
 import com.example.ecommerce_backend.service.AuthService;
 import com.example.ecommerce_backend.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -17,7 +23,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtService jwtService;
-
+    private final UserRepository userRepository;
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
         authService.register(request);
@@ -90,8 +96,20 @@ public class AuthController {
             return ResponseEntity.status(401).build();
         }
 
-        // Tạo access token mới
-        String newAccessToken = jwtService.generateToken(username);
+        // Lấy user từ DB
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+// Lấy permissions đang ACTIVE
+        Set<String> authorities = user.getRole()
+                .getPermissions()
+                .stream()
+                .filter(p -> p.getStatus() == Permission.PermissionStatus.ACTIVE)
+                .map(Permission::getName)
+                .collect(Collectors.toSet());
+
+// Tạo access token mới
+        String newAccessToken = jwtService.generateToken(username, authorities);
 
         // Trả về cookie access token mới
         ResponseCookie accessCookie = ResponseCookie.from("access_token", newAccessToken)
@@ -103,6 +121,10 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header("Set-Cookie", accessCookie.toString())
-                .body(new AuthResponse(newAccessToken, "Bearer"));
+                .body(new AuthResponse(
+                        newAccessToken,
+                        null,
+                        null
+                ));
     }
 }

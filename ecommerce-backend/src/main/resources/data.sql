@@ -37,3 +37,23 @@ VALUES (
     (SELECT id FROM roles WHERE name = 'SELLER'),
     NOW()
 );
+INSERT INTO categories (id, name, parent_id, status)
+VALUES
+(1, 'Điện tử', NULL, 'ACTIVE'),
+(2, 'Laptop', 1, 'ACTIVE'),
+(3, 'Gaming', 2, 'ACTIVE');
+
+
+INSERT INTO permissions (name, roles_type, module_name, features, status)
+VALUES
+('CATEGORY_VIEW',   'ADMIN', 'CATEGORY', 'VIEW',   'ACTIVE'),
+('CATEGORY_CREATE', 'ADMIN', 'CATEGORY', 'CREATE', 'ACTIVE'),
+('CATEGORY_UPDATE', 'ADMIN', 'CATEGORY', 'UPDATE', 'ACTIVE'),
+('CATEGORY_DELETE', 'ADMIN', 'CATEGORY', 'DELETE', 'ACTIVE');
+
+INSERT INTO role_permissions (role_id, permission_id)
+VALUES
+(1, 1),  -- ADMIN -> CATEGORY_VIEW
+(1, 2),
+(1, 3),
+(1, 4);

@@ -5,6 +5,7 @@ package com.example.ecommerce_backend.service.impl;
 import com.example.ecommerce_backend.dto.request.LoginRequest;
 import com.example.ecommerce_backend.dto.request.RegisterRequest;
 import com.example.ecommerce_backend.dto.response.AuthResponse;
+import com.example.ecommerce_backend.entity.Permission;
 import com.example.ecommerce_backend.entity.Role;
 import com.example.ecommerce_backend.entity.User;
 import com.example.ecommerce_backend.repository.RoleRepository;
@@ -14,6 +15,9 @@ import com.example.ecommerce_backend.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -75,10 +79,30 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Invalid username/email or password");
         }
 
-        // 4. Generate tokens
-        String accessToken = jwtService.generateToken(user.getUsername());
-        String refreshToken = jwtService.generateRefreshToken(user.getUsername());
+        // =======================
+        // 🔥 4. LOAD PERMISSIONS
+        // =======================
+        Set<String> authorities =
+                user.getRole()
+                        .getPermissions()              // Set<Permission>
+                        .stream()
+                        .filter(p -> p.getStatus() == Permission.PermissionStatus.ACTIVE)
+                        .map(Permission::getName)
+                        .collect(Collectors.toSet());
 
-        return new AuthResponse(accessToken, refreshToken);
+
+        // =======================
+        // 🔥 5. GENERATE TOKENS
+        // =======================
+        String accessToken = jwtService.generateToken(
+                user.getUsername(),
+                authorities
+        );
+
+        String refreshToken = jwtService.generateRefreshToken(
+                user.getUsername()
+        );
+
+        return new AuthResponse(accessToken, refreshToken,authorities);
     }
 }

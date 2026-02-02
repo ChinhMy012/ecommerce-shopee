@@ -46,3 +46,234 @@ public class User {
         }
     }
 -------------------------------------------------------------
+@Table(name = "shops")
+public class Shop {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user; // Chủ shop
+
+    private String name;
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private ShopStatus status; // PENDING, APPROVED, REJECTED
+
+    private LocalDateTime createdAt;
+
+    public enum ShopStatus {
+        PENDING, APPROVED, REJECTED
+    }
+-----------------------------------------------------
+@Table(name = "products")
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    private String name;
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
+
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductVariant> variants;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<Image> images;
+
+    public enum ProductStatus {
+        PENDING, APPROVED, REJECTED
+    }
+}
+---------------------
+@Table(name = "product_variants")
+public class ProductVariant {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String sku;
+    private Double price;
+    private Integer stock;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL)
+    private List<ProductVariantAttribute> attributes;
+
+    @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL)
+    private List<Image> images;
+}
+--------------------------------------
+@Table(name = "product_variant_attributes")
+public class ProductVariantAttribute {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String attributeName;
+    private String attributeValue;
+
+    @ManyToOne
+    @JoinColumn(name = "variant_id")
+    private ProductVariant variant;
+}
+--------------------------------------------
+@Table(name = "orders")
+public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    private Double total;
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private CustomerAddress address;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> items;
+
+    public enum OrderStatus {
+        PENDING, COMPLETED
+    }
+}
+-------------------------------------------
+@Table(name = "order_items")
+public class OrderItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    @ManyToOne
+    @JoinColumn(name = "variant_id")
+    private ProductVariant variant;
+
+    private Integer quantity;
+    private Double price;
+}
+---------------------------------------------
+@Table(name = "images")
+public class Image {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String url; // link trên server (không lưu binary)
+    private String altText;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = true)
+    private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "variant_id", nullable = true)
+    private ProductVariant variant;
+}
+-------------------------------------------------
+@Table(name = "customer_addresses")
+public class CustomerAddress {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    private String province;
+    private String district;
+    private String ward;
+    private String detail;
+
+    private Boolean isDefault;
+}
+--------------------------------------------------
+@Table(name = "category_attributes")
+public class CategoryAttribute {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    private AttributeType type; // TEXT, NUMBER, SELECT
+
+    @Column(columnDefinition = "TEXT")
+    private String optionsJson;
+
+    public enum AttributeType {
+        TEXT, NUMBER, SELECT
+    }
+}
+---------------------------
+@Table(name = "categories")
+public class Category {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Category parent;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Category> children;
+}
+----------------------------
+@Table(name = "cart_items")
+public class CartItem {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "variant_id")
+    private ProductVariant variant;
+
+    private Integer quantity;
+
+    private LocalDateTime createdAt;
+}
