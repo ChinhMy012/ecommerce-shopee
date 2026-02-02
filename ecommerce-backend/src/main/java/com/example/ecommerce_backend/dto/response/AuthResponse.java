@@ -9,5 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AuthResponse {
     private String accessToken;
-    private String refreshToken; // chỉ dùng nội bộ
+    private String refreshToken;
+
+    
 }

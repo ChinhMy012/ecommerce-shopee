@@ -3,11 +3,12 @@ package com.example.ecommerce_backend.repository;
 
 import com.example.ecommerce_backend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
@@ -16,9 +17,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    default Optional<User> findByUsernameOrEmail(String usernameOrEmail) {
-        Optional<User> byUsername = findByUsername(usernameOrEmail);
-        if (byUsername.isPresent()) return byUsername;
-        return findByEmail(usernameOrEmail);
-    }
+    @Query("""
+        SELECT u FROM User u
+        WHERE u.username = :value OR u.email = :value
+    """)
+    Optional<User> findByUsernameOrEmail(@Param("value") String value);
 }

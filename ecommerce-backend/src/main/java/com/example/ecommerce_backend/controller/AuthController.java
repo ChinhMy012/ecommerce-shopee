@@ -28,15 +28,13 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         AuthResponse tokens = authService.login(request);
 
-        // Cookie access token (ngắn hạn)
         ResponseCookie accessCookie = ResponseCookie.from("access_token", tokens.getAccessToken())
                 .httpOnly(true)
-                .secure(false) // dùng HTTPS thì true
+                .secure(false)
                 .path("/")
                 .maxAge(15 * 60)
                 .build();
 
-        // Cookie refresh token (dài hạn)
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.getRefreshToken())
                 .httpOnly(true)
                 .secure(false)
@@ -47,7 +45,8 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header("Set-Cookie", accessCookie.toString())
                 .header("Set-Cookie", refreshCookie.toString())
-                .body(new AuthResponse("Login successful", "OK"));
+                // ✅ TRẢ TOKEN THẬT
+                .body(tokens);
     }
 
     @PostMapping("/logout")

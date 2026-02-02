@@ -13,6 +13,14 @@ spring:
       hibernate:
         format_sql: true
 
+    # BẮT BUỘC để data.sql chạy SAU khi Hibernate tạo bảng
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+
+
 ecommerce:
   security:
     jwt-secret: THIS_IS_A_VERY_LONG_AND_SECURE_JWT_SECRET_KEY_123456789

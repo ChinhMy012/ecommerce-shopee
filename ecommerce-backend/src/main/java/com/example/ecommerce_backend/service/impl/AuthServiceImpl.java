@@ -46,17 +46,36 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
     }
-
     @Override
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByUsernameOrEmail(request.getUsernameOrEmail())
+
+        // 1. Validate request
+        if (request == null) {
+            throw new RuntimeException("Request body is missing");
+        }
+
+        String usernameOrEmail = request.getUsernameOrEmail();
+        String password = request.getPassword();
+
+        if (usernameOrEmail == null || usernameOrEmail.trim().isEmpty()) {
+            throw new RuntimeException("Username or email is required");
+        }
+
+        if (password == null || password.trim().isEmpty()) {
+            throw new RuntimeException("Password is required");
+        }
+
+        // 2. Find user
+        User user = userRepository.findByUsernameOrEmail(usernameOrEmail)
                 .orElseThrow(() -> new RuntimeException("Invalid username/email or password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        // 3. Check password
+        boolean matched = passwordEncoder.matches(password, user.getPasswordHash());
+        if (!matched) {
             throw new RuntimeException("Invalid username/email or password");
         }
 
-        // Tạo access token + refresh token
+        // 4. Generate tokens
         String accessToken = jwtService.generateToken(user.getUsername());
         String refreshToken = jwtService.generateRefreshToken(user.getUsername());
 
