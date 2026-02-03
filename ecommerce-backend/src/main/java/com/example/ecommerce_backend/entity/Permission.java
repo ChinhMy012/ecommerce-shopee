@@ -20,9 +20,6 @@ public class Permission {
     @Column(nullable = false, unique = true)
     private String name;
 
-    // ADMIN, SELLER, STAFF...
-    @Column(name = "roles_type", nullable = false)
-    private String rolesType;
 
     // CATEGORY, PRODUCT, ORDER...
     @Column(name = "module_name", nullable = false)

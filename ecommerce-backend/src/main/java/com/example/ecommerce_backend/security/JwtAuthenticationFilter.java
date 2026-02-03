@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Component
 @RequiredArgsConstructor
@@ -42,28 +42,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String username = jwtService.extractUsername(token);
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                List<String> authorities = jwtService.extractAuthorities(token);
+                List<String> permissions = jwtService.extractAuthorities(token);
 
-                UsernamePasswordAuthenticationToken authentication =
+                List<SimpleGrantedAuthority> authorities =
+                        permissions.stream()
+                                .map(SimpleGrantedAuthority::new)
+                                .toList();
+
+                UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
                                 username,
                                 null,
-                                authorities.stream()
-                                        .map(SimpleGrantedAuthority::new)
-                                        .collect(Collectors.toList())
+                                authorities
                         );
 
-                authentication.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
 
         } catch (Exception e) {
-            // token sai thì cho rớt xuống 403
+            SecurityContextHolder.clearContext();
         }
 
         filterChain.doFilter(request, response);

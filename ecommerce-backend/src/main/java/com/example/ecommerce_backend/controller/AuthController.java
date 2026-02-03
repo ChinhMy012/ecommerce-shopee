@@ -1,8 +1,8 @@
 package com.example.ecommerce_backend.controller;
 
-import com.example.ecommerce_backend.dto.request.LoginRequest;
-import com.example.ecommerce_backend.dto.request.RegisterRequest;
-import com.example.ecommerce_backend.dto.response.AuthResponse;
+import com.example.ecommerce_backend.dto.request.login.LoginRequest;
+import com.example.ecommerce_backend.dto.request.login.RegisterRequest;
+import com.example.ecommerce_backend.dto.response.login.AuthResponse;
 import com.example.ecommerce_backend.entity.Permission;
 import com.example.ecommerce_backend.entity.User;
 import com.example.ecommerce_backend.repository.UserRepository;

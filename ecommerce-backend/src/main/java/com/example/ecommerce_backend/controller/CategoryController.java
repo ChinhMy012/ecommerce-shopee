@@ -1,6 +1,6 @@
 package com.example.ecommerce_backend.controller;
 
-import com.example.ecommerce_backend.dto.response.CategoryTreeResponse;
+import com.example.ecommerce_backend.dto.response.category.CategoryTreeResponse;
 import com.example.ecommerce_backend.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

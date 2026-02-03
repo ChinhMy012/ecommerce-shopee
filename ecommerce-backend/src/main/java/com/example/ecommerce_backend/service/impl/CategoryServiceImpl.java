@@ -1,6 +1,6 @@
 package com.example.ecommerce_backend.service.impl;
 
-import com.example.ecommerce_backend.dto.response.CategoryTreeResponse;
+import com.example.ecommerce_backend.dto.response.category.CategoryTreeResponse;
 import com.example.ecommerce_backend.entity.Category;
 import com.example.ecommerce_backend.repository.CategoryRepository;
 import com.example.ecommerce_backend.service.CategoryService;
