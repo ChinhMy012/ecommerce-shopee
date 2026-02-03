@@ -29,4 +29,11 @@ public class ProductVariant {
 
     @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL)
     private List<Image> images;
+
+    @Enumerated(EnumType.STRING)
+    private VariantStatus status;
+
+    public enum VariantStatus {
+        ACTIVE, INACTIVE
+    }
 }

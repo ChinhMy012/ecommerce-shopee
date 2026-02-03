@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "products")
@@ -13,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,24 +23,37 @@ public class Product {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    // ✅ ĐỔI List -> Set
+    @ManyToMany
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories;
 
     private String name;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    private ProductStatus status;
-
     private LocalDateTime createdAt;
 
+    private String slug;
+
+    private LocalDateTime updatedAt;
+
+    // ✅ GIỮ List (chỉ 1 BAG)
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductVariant> variants;
 
+    // ✅ ĐỔI SANG Set
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Image> images;
+    private Set<Image> images;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    private ProductStatus status;
 
     public enum ProductStatus {
         PENDING, APPROVED, REJECTED
