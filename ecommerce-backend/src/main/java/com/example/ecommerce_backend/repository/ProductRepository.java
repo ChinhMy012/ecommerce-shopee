@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("""
@@ -14,4 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     WHERE p.status = :status
 """)
     List<Product> findAllByStatus(@Param("status") Product.ProductStatus status);
+
+    Optional<Product> findBySlugAndStatus(String slug, Product.ProductStatus status);
 }

@@ -69,10 +69,10 @@ VALUES
 (3, 1); -- SELLER -> CATEGORY_VIEW
 
 
-INSERT INTO products (id, name, description, status) VALUES
-(1, 'Laptop Gaming ASUS ROG', 'Laptop gaming hiệu năng cao', 'APPROVED'),
-(2, 'Laptop Văn Phòng Dell', 'Laptop mỏng nhẹ cho văn phòng', 'APPROVED'),
-(3, 'Chuột Gaming Logitech', 'Chuột gaming RGB', 'APPROVED');
+INSERT INTO products (id, name, slug, description, status) VALUES
+(1, 'Laptop Gaming ASUS ROG','laptop-gaming-asus-rog', 'Laptop gaming hiệu năng cao', 'APPROVED'),
+(2, 'Laptop Văn Phòng Dell','laptop-van-phong-dell', 'Laptop mỏng nhẹ cho văn phòng', 'APPROVED'),
+(3, 'Chuột Gaming Logitech','chuot-gaming-logitech', 'Chuột gaming RGB', 'APPROVED');
 
 INSERT INTO product_categories (product_id, category_id) VALUES
 (1, 3), -- ASUS ROG → Gaming
@@ -91,3 +91,34 @@ INSERT INTO product_variants (product_id, sku, price, stock, status) VALUES
 -- Chuột
 (3, 'LOGI-G102',   450000.00,   100, 'ACTIVE'),
 (3, 'LOGI-G502',   1200000.00,  50,  'ACTIVE');
+
+INSERT INTO product_variant_attributes (variant_id, attribute_name, attribute_value) VALUES
+-- ASUS ROG
+(1, 'CPU', 'Intel i7'),
+(1, 'RAM', '16GB'),
+(2, 'CPU', 'Intel i9'),
+(2, 'RAM', '32GB'),
+
+-- Dell
+(3, 'CPU', 'Intel i5'),
+(3, 'RAM', '8GB'),
+(4, 'CPU', 'Intel i7'),
+(4, 'RAM', '16GB');
+
+INSERT INTO images (url, alt_text, product_id) VALUES
+('asus-rog-thumb.jpg', 'ASUS ROG Laptop', 1),
+('dell-laptop-thumb.jpg', 'Dell Office Laptop', 2),
+('logitech-mouse-thumb.jpg', 'Logitech Gaming Mouse', 3);
+
+INSERT INTO images (url, alt_text, variant_id) VALUES
+-- ASUS ROG
+('rog-i7.jpg', 'ASUS ROG i7', 1),
+('rog-i9.jpg', 'ASUS ROG i9', 2),
+
+-- Dell
+('dell-i5.jpg', 'Dell i5', 3),
+('dell-i7.jpg', 'Dell i7', 4),
+
+-- Logitech
+('logi-g102.jpg', 'Logitech G102', 5),
+('logi-g502.jpg', 'Logitech G502', 6);

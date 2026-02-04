@@ -77,6 +77,7 @@ public class Shop {
 -----------------------------------------------------
 @Table(name = "products")
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -85,24 +86,37 @@ public class Product {
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    // ✅ ĐỔI List -> Set
+    @ManyToMany
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories;
 
     private String name;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    private ProductStatus status;
-
     private LocalDateTime createdAt;
 
+    private String slug;
+
+    private LocalDateTime updatedAt;
+
+    // ✅ GIỮ List (chỉ 1 BAG)
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductVariant> variants;
 
+    // ✅ ĐỔI SANG Set
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<Image> images;
+    private Set<Image> images;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = 20, nullable = false)
+    private ProductStatus status;
 
     public enum ProductStatus {
         PENDING, APPROVED, REJECTED
@@ -128,6 +142,13 @@ public class ProductVariant {
 
     @OneToMany(mappedBy = "variant", cascade = CascadeType.ALL)
     private List<Image> images;
+
+    @Enumerated(EnumType.STRING)
+    private VariantStatus status;
+
+    public enum VariantStatus {
+        ACTIVE, INACTIVE
+    }
 }
 --------------------------------------
 @Table(name = "product_variant_attributes")
@@ -294,4 +315,46 @@ public class CartItem {
     private Integer quantity;
 
     private LocalDateTime createdAt;
+}
+-----------------------------------
+package com.example.ecommerce_backend.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "permissions")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Permission {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // CATEGORY_VIEW, CATEGORY_CREATE, ...
+    @Column(nullable = false, unique = true)
+    private String name;
+
+
+    // CATEGORY, PRODUCT, ORDER...
+    @Column(name = "module_name", nullable = false)
+    private String moduleName;
+
+    // VIEW, CREATE, UPDATE, DELETE
+    @Column(nullable = false)
+    private String features;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PermissionStatus status;
+
+    public enum PermissionStatus {
+        ACTIVE,
+        INACTIVE
+    }
+
 }

@@ -49,7 +49,7 @@ public class Product {
 
     // ✅ ĐỔI SANG Set
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private Set<Image> images;
+    private List<Image> images;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20, nullable = false)

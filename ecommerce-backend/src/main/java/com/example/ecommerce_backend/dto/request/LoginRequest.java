@@ -1,4 +1,4 @@
-package com.example.ecommerce_backend.dto.request.login;
+package com.example.ecommerce_backend.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
