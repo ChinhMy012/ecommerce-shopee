@@ -1,6 +1,7 @@
 package com.example.ecommerce_backend.service.impl;
 
 import com.example.ecommerce_backend.dto.request.cart.AddToCartRequest;
+import com.example.ecommerce_backend.dto.request.cart.UpdateCartItemRequest;
 import com.example.ecommerce_backend.dto.response.cart.CartItemResponse;
 import com.example.ecommerce_backend.dto.response.cart.CartResponse;
 import com.example.ecommerce_backend.entity.*;
@@ -120,9 +121,9 @@ public class CartServiceImpl implements CartService {
     // UPDATE QUANTITY
     // =========================
     @Override
-    public CartResponse updateQuantity(Long cartItemId, Integer quantity) {
+    public CartResponse updateQuantity(Long cartItemId, UpdateCartItemRequest quantity) {
 
-        if (quantity <= 0) {
+        if (quantity.getQuantity() <= 0) {
             return removeItem(cartItemId);
         }
 
@@ -131,11 +132,11 @@ public class CartServiceImpl implements CartService {
 
         ProductVariant v = item.getVariant();
 
-        if (quantity > v.getStock()) {
+        if (quantity.getQuantity() > v.getStock()) {
             throw new RuntimeException("Not enough stock");
         }
 
-        item.setQuantity(quantity);
+        item.setQuantity(quantity.getQuantity());
         item.setUpdatedAt(LocalDateTime.now());
 
         return getMyCart();
