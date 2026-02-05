@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -33,18 +34,20 @@ public class ProductServiceImpl implements ProductService {
         res.setId(product.getId());
         res.setName(product.getName());
         res.setSlug(product.getSlug());
-        res.setMinPrice(product.getVariants()
-                .stream()
-                .filter(v -> v.getStatus() == ProductVariant.VariantStatus.ACTIVE)
-                .map(ProductVariant::getPrice)
-                .min(Double::compare)
-                .orElse(0.0));
+        res.setMinPrice(
+                product.getVariants()
+                        .stream()
+                        .filter(v -> v.getStatus() == ProductVariant.VariantStatus.ACTIVE)
+                        .map(ProductVariant::getPrice)          // BigDecimal
+                        .min(BigDecimal::compareTo)
+                        .orElse(BigDecimal.ZERO)
+        );
         res.setMaxPrice(product.getVariants()
                 .stream()
                 .filter(v -> v.getStatus() == ProductVariant.VariantStatus.ACTIVE)
                 .map(ProductVariant::getPrice)
-                .max(Double::compare)
-                .orElse(0.0));
+                .max(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO));
         res.setThumbnail(product.getImages()
                 .stream()
                 .findFirst()

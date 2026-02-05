@@ -3,6 +3,8 @@ package com.example.ecommerce_backend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -17,7 +19,7 @@ public class ProductVariant {
     private Long id;
 
     private String sku;
-    private Double price;
+    private BigDecimal price;
     private Integer stock;
 
     @ManyToOne

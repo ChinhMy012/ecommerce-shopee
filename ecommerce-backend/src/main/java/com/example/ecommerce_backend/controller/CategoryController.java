@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
 @RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
-    @PreAuthorize("hasAuthority('CATEGORY_VIEW')")
+
     @GetMapping("/tree")
     public List<CategoryTreeResponse> getTree() {
         return categoryService.getCategoryTree();

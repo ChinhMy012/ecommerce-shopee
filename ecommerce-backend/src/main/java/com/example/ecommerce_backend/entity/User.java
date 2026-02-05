@@ -1,4 +1,5 @@
 package com.example.ecommerce_backend.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,7 +40,15 @@ public class User {
             createdAt = LocalDateTime.now();
         }
     }
-    //Ý nghĩa thực tế:
-    //Bạn không cần set createdAt bằng tay trong Service/Controller.
-    //Mỗi khi tạo user mới → field created_at trong DB sẽ tự có giá trị đúng thời điểm tạo.
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status;
+
+    public enum UserStatus {
+        ACTIVE, BLOCKED
+        //Ý nghĩa thực tế:
+        //Bạn không cần set createdAt bằng tay trong Service/Controller.
+        //Mỗi khi tạo user mới → field created_at trong DB sẽ tự có giá trị đúng thời điểm tạo.
+    }
 }

@@ -11,30 +11,30 @@ INSERT IGNORE INTO roles (name, description) VALUES
 -- password = 123456
 -- =========================
 
-INSERT IGNORE INTO users (username, email, password_hash, role_id, created_at)
+INSERT IGNORE INTO users (username, email, password_hash, role_id, status, created_at)
 VALUES (
     'admin',
     'admin@gmail.com',
     '$2a$10$aFVZOsuwi5IYKUn3c/smL.j58rVX0CWpXGpzkZu/L1uZIi.kQpM46',
-    (SELECT id FROM roles WHERE name = 'ADMIN'),
+    (SELECT id FROM roles WHERE name = 'ADMIN'),'ACTIVE',
     NOW()
 );
 
-INSERT IGNORE INTO users (username, email, password_hash, role_id, created_at)
+INSERT IGNORE INTO users (username, email, password_hash, role_id, status, created_at)
 VALUES (
     'customer1',
     'customer1@gmail.com',
     '$2a$10$aFVZOsuwi5IYKUn3c/smL.j58rVX0CWpXGpzkZu/L1uZIi.kQpM46',
-    (SELECT id FROM roles WHERE name = 'CUSTOMER'),
+    (SELECT id FROM roles WHERE name = 'CUSTOMER'),'ACTIVE',
     NOW()
 );
 
-INSERT IGNORE INTO users (username, email, password_hash, role_id, created_at)
+INSERT IGNORE INTO users (username, email, password_hash, role_id, status, created_at)
 VALUES (
     'seller1',
     'seller1@gmail.com',
     '$2a$10$aFVZOsuwi5IYKUn3c/smL.j58rVX0CWpXGpzkZu/L1uZIi.kQpM46',
-    (SELECT id FROM roles WHERE name = 'SELLER'),
+    (SELECT id FROM roles WHERE name = 'SELLER'), 'ACTIVE',
     NOW()
 );
 INSERT INTO categories (id, name, parent_id, status) VALUES
@@ -69,10 +69,10 @@ VALUES
 (3, 1); -- SELLER -> CATEGORY_VIEW
 
 
-INSERT INTO products (id, name, slug, description, status) VALUES
-(1, 'Laptop Gaming ASUS ROG','laptop-gaming-asus-rog', 'Laptop gaming hiệu năng cao', 'APPROVED'),
-(2, 'Laptop Văn Phòng Dell','laptop-van-phong-dell', 'Laptop mỏng nhẹ cho văn phòng', 'APPROVED'),
-(3, 'Chuột Gaming Logitech','chuot-gaming-logitech', 'Chuột gaming RGB', 'APPROVED');
+INSERT INTO products (id, name, slug, description, status, created_at) VALUES
+(1, 'Laptop Gaming ASUS ROG','laptop-gaming-asus-rog', 'Laptop gaming hiệu năng cao', 'APPROVED', NOW()),
+(2, 'Laptop Văn Phòng Dell','laptop-van-phong-dell', 'Laptop mỏng nhẹ cho văn phòng', 'APPROVED', NOW()),
+(3, 'Chuột Gaming Logitech','chuot-gaming-logitech', 'Chuột gaming RGB', 'APPROVED', NOW());
 
 INSERT INTO product_categories (product_id, category_id) VALUES
 (1, 3), -- ASUS ROG → Gaming
@@ -122,3 +122,36 @@ INSERT INTO images (url, alt_text, variant_id) VALUES
 -- Logitech
 ('logi-g102.jpg', 'Logitech G102', 5),
 ('logi-g502.jpg', 'Logitech G502', 6);
+----------------------------------check cart
+
+
+INSERT INTO products (id, name, slug, description, status, created_at) VALUES
+(10,'Áo thun nam','ao-thun-nam','Áo thun cotton 100%','APPROVED', NOW());
+
+
+
+INSERT INTO product_variants (product_id, sku, price, stock, status) VALUES
+(10, 'ATN-BLACK-M', 199000, 20, 'ACTIVE'),
+(10, 'ATN-BLACK-L', 199000, 5,  'ACTIVE'),
+( 10, 'ATN-WHITE-M', 189000, 0,  'ACTIVE'); -- hết hàng để test
+
+INSERT INTO product_variant_attributes (variant_id, attribute_name, attribute_value)
+VALUES
+-- BLACK - M
+(4, 'Color', 'Black'),
+(4, 'Size', 'M'),
+
+-- BLACK - L
+(5, 'Color', 'Black'),
+(5, 'Size', 'L'),
+
+-- WHITE - M
+(6, 'Color', 'White'),
+(6, 'Size', 'M');
+
+INSERT INTO cart_items (id, user_id, variant_id, quantity, created_at)
+VALUES
+(1, 2, 4, 2, NOW()),  -- còn hàng
+(2, 2, 5, 1, NOW()),  -- gần hết hàng
+(3, 2, 6, 1, NOW());  -- hết hàng (test invalid cart)
+

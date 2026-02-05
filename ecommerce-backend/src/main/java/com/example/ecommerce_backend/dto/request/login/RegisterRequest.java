@@ -1,4 +1,4 @@
-package com.example.ecommerce_backend.dto.request;
+package com.example.ecommerce_backend.dto.request.login;
 
 
 import lombok.Getter;

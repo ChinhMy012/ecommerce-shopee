@@ -2,6 +2,7 @@ package com.example.ecommerce_backend.dto.response.product;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import java.util.Map;
 public class VariantResponse {
     private Long id;
     private String sku;
-    private Double price;
+    private BigDecimal price;
     private Integer stock;
 
     private Map<String, String> attributes;

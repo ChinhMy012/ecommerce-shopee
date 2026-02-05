@@ -22,4 +22,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
         WHERE u.username = :value OR u.email = :value
     """)
     Optional<User> findByUsernameOrEmail(@Param("value") String value);
+
 }

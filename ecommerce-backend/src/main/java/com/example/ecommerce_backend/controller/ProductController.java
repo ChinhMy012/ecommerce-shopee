@@ -17,13 +17,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    @PreAuthorize("hasAuthority('PRODUCT_VIEW')")
+
     @GetMapping("/all")
     public List<ProductResponse> getAllProducts() {
         return productService.getAllProducts();
     }
 
-    @PreAuthorize("hasAuthority('PRODUCT_VIEW')")
+
     @GetMapping("/{slug}")
     public ResponseEntity<ProductDetailResponse> getDetail(@PathVariable String slug) {
         return ResponseEntity.ok(productService.getProductDetail(slug));

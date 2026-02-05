@@ -43,6 +43,13 @@ public class Product {
 
     private LocalDateTime updatedAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
+
     // ✅ GIỮ List (chỉ 1 BAG)
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductVariant> variants;
