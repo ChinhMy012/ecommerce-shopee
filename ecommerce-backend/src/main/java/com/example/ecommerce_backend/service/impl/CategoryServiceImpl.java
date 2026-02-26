@@ -50,19 +50,19 @@ public class CategoryServiceImpl implements CategoryService {
      */
     private CategoryTreeResponse mapToTree(Category category) {
 
-        // 1. Tạo DTO mới
+        // Tạo DTO mới
         CategoryTreeResponse dto = new CategoryTreeResponse();
 
-        // 2. Map các field cơ bản
+        // Map các field cơ bản
         dto.setId(category.getId());
         dto.setName(category.getName());
 
-        // 3. Xử lý danh sách category con
+        // Xử lý danh sách category con
         // Nếu category này có children
         if (category.getChildren() != null && !category.getChildren().isEmpty()) {
 
-            // 4. Lọc ra các category con còn hoạt động (status = 1)
-            // 5. Với mỗi category con → gọi lại mapToTree (đệ quy)
+            // Lọc ra các category con còn hoạt động (status = 1)
+            // Với mỗi category con → gọi lại mapToTree (đệ quy)
             dto.setChildren(
                     category.getChildren().stream()
                             .filter(child -> child.getStatus() == Category.CategoryStatus.ACTIVE)
@@ -71,11 +71,11 @@ public class CategoryServiceImpl implements CategoryService {
             );
 
         } else {
-            // 6. Nếu không có children → trả về danh sách rỗng
+            // Nếu không có children → trả về danh sách rỗng
             dto.setChildren(List.of());
         }
 
-        // 7. Trả về DTO đã build xong
+        // Trả về DTO đã build xong
         return dto;
     }
 }

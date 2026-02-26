@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // =======================
-        // 🔥 4. LOAD PERMISSIONS
+        // 4. LOAD PERMISSIONS
         // =======================
         Set<String> authorities =
                 user.getRole()
@@ -92,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
 
 
         // =======================
-        // 🔥 5. GENERATE TOKENS
+        // 5. GENERATE TOKENS
         // =======================
         String accessToken = jwtService.generateToken(
                 user.getUsername(),

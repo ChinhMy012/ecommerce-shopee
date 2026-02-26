@@ -40,7 +40,7 @@ public class AuthController {
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokens.getRefreshToken()).httpOnly(true).secure(false).path("/").maxAge(7 * 24 * 60 * 60).build();
 
         return ResponseEntity.ok().header("Set-Cookie", accessCookie.toString()).header("Set-Cookie", refreshCookie.toString())
-                // ✅ TRẢ TOKEN THẬT
+                // TRẢ TOKEN THẬT
                 .body(tokens);
     }
 

@@ -155,3 +155,7 @@ VALUES
 (2, 2, 5, 1, NOW()),  -- gần hết hàng
 (3, 2, 6, 1, NOW());  -- hết hàng (test invalid cart)
 
+INSERT INTO customer_addresses
+(user_id, detail_address, district, province, ward, phone, receiver_name, is_default)
+VALUES
+(2, '123 Nguyen Trai', 'District 1', 'Ho Chi Minh', 'Ben Thanh', '0909123456', 'Nguyen Van A', true);

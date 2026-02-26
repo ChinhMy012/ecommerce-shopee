@@ -25,7 +25,8 @@ public class Role {
 ----------------------------------------
 @Table(name = "users")
 public class User {
-@Id
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -52,6 +53,18 @@ public class User {
             createdAt = LocalDateTime.now();
         }
     }
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status;
+
+    public enum UserStatus {
+        ACTIVE, BLOCKED
+        //Ý nghĩa thực tế:
+        //Bạn không cần set createdAt bằng tay trong Service/Controller.
+        //Mỗi khi tạo user mới → field created_at trong DB sẽ tự có giá trị đúng thời điểm tạo.
+    }
+}
 -------------------------------------------------------------
 @Table(name = "shops")
 public class Shop {
@@ -106,13 +119,20 @@ public class Product {
 
     private LocalDateTime updatedAt;
 
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
+
     // ✅ GIỮ List (chỉ 1 BAG)
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductVariant> variants;
 
     // ✅ ĐỔI SANG Set
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private Set<Image> images;
+    private List<Image> images;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20, nullable = false)
@@ -130,7 +150,7 @@ public class ProductVariant {
     private Long id;
 
     private String sku;
-    private Double price;
+    private BigDecimal price;
     private Integer stock;
 
     @ManyToOne
@@ -299,22 +319,33 @@ public class CategoryAttribute {
     }
 ----------------------------
 @Table(name = "cart_items")
+@Table(name = "cart_items",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "variant_id"}))
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "variant_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "variant_id", nullable = false)
     private ProductVariant variant;
 
+    @Column(nullable = false)
     private Integer quantity;
 
     private LocalDateTime createdAt;
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
+    private LocalDateTime updatedAt;
 }
 -----------------------------------
 package com.example.ecommerce_backend.entity;

@@ -14,14 +14,17 @@ public class CustomerAddress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    private String receiverName;
+    private String phone;
 
     private String province;
     private String district;
     private String ward;
-    private String detail;
+    private String detailAddress;
 
     private Boolean isDefault;
 }

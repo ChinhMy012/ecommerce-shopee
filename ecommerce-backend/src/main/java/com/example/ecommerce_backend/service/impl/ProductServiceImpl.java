@@ -77,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
         Map<String, Set<String>> attributeMap = new LinkedHashMap<>();
         List<VariantResponse> variantResponses = new ArrayList<>();
 
-        // ✅ COPY variants ra List mới
+        // COPY variants ra List mới
         List<ProductVariant> variants = new ArrayList<>(product.getVariants());
 
         for (ProductVariant variant : variants) {
@@ -145,7 +145,7 @@ public class ProductServiceImpl implements ProductService {
         res.setDescription(product.getDescription());
         res.setSlug(product.getSlug());
 
-        // ✅ COPY product images
+        // COPY product images
         List<Image> productImages = new ArrayList<>(product.getImages());
 
         res.setImages(

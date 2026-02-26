@@ -33,11 +33,11 @@ public class CartController {
         boolean isGuest = auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser");
 
         if (isGuest) {
-            // ❌ Guest KHÔNG ghi DB
+            //  Guest KHÔNG ghi DB
             return ResponseEntity.ok(Map.of("mode", "GUEST", "message", "Store cart in localStorage"));
         }
 
-        // ✅ Logged-in → ghi DB
+        //  Logged-in → ghi DB
         CartResponse res = cartService.addToCart(request);
         return ResponseEntity.ok(res);
     }
