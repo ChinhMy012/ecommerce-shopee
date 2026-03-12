@@ -35,12 +35,10 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status;
 
-    // 🔴 BẮT BUỘC
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod paymentMethod;
 
-    // 🔴 BẮT BUỘC
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentStatus paymentStatus;

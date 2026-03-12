@@ -19,4 +19,8 @@ public class PermissionsConstants {
     public static final String PRODUCT_DELETE = "PRODUCT_DELETE";
     public static final String PRODUCT_UPDATE = "PRODUCT_UPDATE";
 
+    public static final String SELLER_ADD_PRODUCT = "SELLER_ADD_PRODUCT";
+
+    public static final String ADMIN_APPROVE_PRODUCT = "ADMIN_UPDATE_STATUS_PRODUCT";
+
 }

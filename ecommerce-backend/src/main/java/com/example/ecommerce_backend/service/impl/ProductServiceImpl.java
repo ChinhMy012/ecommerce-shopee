@@ -1,24 +1,44 @@
 package com.example.ecommerce_backend.service.impl;
 
-import com.example.ecommerce_backend.dto.response.product.AttributeResponse;
-import com.example.ecommerce_backend.dto.response.product.ProductDetailResponse;
-import com.example.ecommerce_backend.dto.response.product.ProductResponse;
-import com.example.ecommerce_backend.dto.response.product.VariantResponse;
+import com.example.ecommerce_backend.dto.request.image.ProductImageRequest;
+import com.example.ecommerce_backend.dto.request.product.CreateProductRequest;
+import com.example.ecommerce_backend.dto.request.product.VariantAttributeRequest;
+import com.example.ecommerce_backend.dto.request.product.VariantRequest;
+import com.example.ecommerce_backend.dto.response.product.*;
 import com.example.ecommerce_backend.entity.*;
-import com.example.ecommerce_backend.repository.ProductRepository;
+import com.example.ecommerce_backend.repository.*;
 import com.example.ecommerce_backend.service.ProductService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final ShopRepository shopRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductVariantRepository productVariantRepository;
+    private final ProductVariantAttributeRepository productVariantAttributeRepository;
+    private final ImageRepository imageRepository;
+
+
+    private User getCurrentUser() {
+        String username = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
 
     @Override
     public List<ProductResponse> getAllProducts() {
@@ -158,5 +178,135 @@ public class ProductServiceImpl implements ProductService {
         res.setVariants(variantResponses);
 
         return res;
+    }
+
+    @Override
+    @Transactional
+    public void createProduct(CreateProductRequest request) {
+
+        User uAthu = getCurrentUser();
+
+        // 1. tìm shop
+        Shop shop = shopRepository.findByUser(uAthu)
+                .orElseThrow(() -> new RuntimeException("Shop not found"));
+
+        // 2. load category từ DB
+        Set<Category> categories = request.getCategoryIds().stream()
+                .map(id -> categoryRepository.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Category not found: " + id)))
+                .collect(Collectors.toSet());
+
+        // 3. tạo product
+        Product product = new Product();
+        product.setName(request.getName());
+        product.setSlug(generateUniqueSlug(request.getName()));
+        product.setDescription(request.getDescription());
+        product.setShop(shop);
+        product.setCategories(categories);
+        product.setStatus(Product.ProductStatus.PENDING);
+
+        productRepository.save(product);
+
+        // 4. save product images
+        saveProductImages(product, request.getImages());
+
+        // 5. save variants
+        saveVariants(product, request.getVariants());
+    }
+
+    private String generateSlug(String name) {
+
+        // bỏ dấu tiếng Việt
+        String slug = java.text.Normalizer.normalize(name, java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
+        // lowercase
+        slug = slug.toLowerCase();
+
+        // thay ký tự không hợp lệ thành -
+        slug = slug.replaceAll("[^a-z0-9]+", "-");
+
+        // bỏ - ở đầu và cuối
+        slug = slug.replaceAll("^-|-$", "");
+
+        return slug;
+    }
+
+    private String generateUniqueSlug(String name) {
+
+        String baseSlug = generateSlug(name);
+        String slug = baseSlug;
+        int count = 1;
+
+        while (productRepository.existsBySlug(slug)) {
+            slug = baseSlug + "-" + count;
+            count++;
+        }
+
+        return slug;
+    }
+    private void saveVariants(Product product, List<VariantRequest> variantRequests) {
+
+        for (VariantRequest variantRequest : variantRequests) {
+
+            ProductVariant variant = new ProductVariant();
+
+            variant.setProduct(product);
+            variant.setSku(variantRequest.getSku());
+            variant.setPrice(variantRequest.getPrice());
+            variant.setStock(variantRequest.getStock());
+            variant.setStatus(ProductVariant.VariantStatus.ACTIVE);
+
+            productVariantRepository.save(variant);
+
+            saveVariantAttributes(variant, variantRequest.getAttributes());
+        }
+    }
+
+    private void saveVariantAttributes(
+            ProductVariant variant,
+            List<VariantAttributeRequest> attributes
+    ) {
+
+        if (attributes == null) return;
+
+        for (VariantAttributeRequest attr : attributes) {
+
+            ProductVariantAttribute attribute = new ProductVariantAttribute();
+
+            attribute.setVariant(variant);
+            attribute.setAttributeName(attr.getAttributeName());
+            attribute.setAttributeValue(attr.getAttributeValue());
+
+            productVariantAttributeRepository.save(attribute);
+        }
+    }
+    private void saveProductImages(Product product, List<ProductImageRequest> images) {
+
+        if (images == null || images.isEmpty()) return;
+
+        for (ProductImageRequest img : images) {
+
+            Image image = new Image();
+            image.setUrl(img.getUrl());
+            image.setAltText(img.getAltText());
+            image.setProduct(product);
+
+            imageRepository.save(image);
+        }
+    }
+
+    @Transactional
+    public void updateStatus(Integer productId, Product.ProductStatus status) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        product.setStatus(status);
+    }
+
+    @Override
+    public List<AdminProductReviewResponse> getPendingProducts() {
+        return productRepository.findProductsByStatus("PENDING");
     }
 }

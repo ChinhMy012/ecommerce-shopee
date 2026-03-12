@@ -23,11 +23,22 @@ public class Shop {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private ShopStatus status; // PENDING, APPROVED, REJECTED
+    @Column(nullable = false)
+    private ShopApprovalStatus approvalStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ShopOperationalStatus operationalStatus;
     private LocalDateTime createdAt;
 
-    public enum ShopStatus {
-        PENDING, APPROVED, REJECTED
+    public enum ShopApprovalStatus {
+        PENDING,
+        APPROVED,
+        REJECTED
+    }
+    public enum ShopOperationalStatus {
+        INACTIVE,
+        ACTIVE,
+        SUSPENDED
     }
 }

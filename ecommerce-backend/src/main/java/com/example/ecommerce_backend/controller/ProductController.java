@@ -1,14 +1,14 @@
 package com.example.ecommerce_backend.controller;
 
+import com.example.ecommerce_backend.dto.request.product.UpdateProductStatusRequest;
 import com.example.ecommerce_backend.dto.response.product.ProductDetailResponse;
 import com.example.ecommerce_backend.dto.response.product.ProductResponse;
 import com.example.ecommerce_backend.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -26,5 +26,23 @@ public class ProductController {
     @GetMapping("/{slug}")
     public ResponseEntity<ProductDetailResponse> getDetail(@PathVariable String slug) {
         return ResponseEntity.ok(productService.getProductDetail(slug));
+    }
+
+
+    @PatchMapping("/products/{id}/status")
+    @PreAuthorize("hasAuthority('ADMIN_UPDATE_STATUS_PRODUCT')")
+    public ResponseEntity<?> updateStatus(
+            @PathVariable Integer id,
+            @RequestBody UpdateProductStatusRequest request
+    ) {
+        productService.updateStatus(id, request.getStatus());
+        return ResponseEntity.ok("Status updated");
+    }
+
+    @GetMapping("/pending")
+    @PreAuthorize("hasAuthority('ADMIN_UPDATE_STATUS_PRODUCT')")
+    public ResponseEntity<?> getPendingProducts() {
+
+        return ResponseEntity.ok(productService.getPendingProducts());
     }
 }
