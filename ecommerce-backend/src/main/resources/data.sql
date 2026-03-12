@@ -34,17 +34,17 @@ VALUES (
     'seller1',
     'seller1@gmail.com',
     '$2a$10$aFVZOsuwi5IYKUn3c/smL.j58rVX0CWpXGpzkZu/L1uZIi.kQpM46',
-    (SELECT id FROM roles WHERE name = 'SELLER'), 'ACTIVE',
+    (SELECT id FROM roles WHERE name = 'CUSTOMER'), 'ACTIVE',
     NOW()
 );
-INSERT INTO categories (id, name, parent_id, status) VALUES
+INSERT IGNORE INTO categories (id, name, parent_id, status)
+VALUES
 (1, 'Điện tử', NULL, 'ACTIVE'),
 (2, 'Laptop', 1, 'ACTIVE'),
 (3, 'Gaming', 2, 'ACTIVE'),
 (4, 'Phụ kiện', 1, 'ACTIVE');
 
-
-INSERT INTO permissions (name, module_name, features, status)
+INSERT IGNORE INTO permissions (name, module_name, features, status)
 VALUES
 ('CATEGORY_VIEW', 'CATEGORY', 'VIEW',   'ACTIVE'),
 ('CATEGORY_CREATE', 'CATEGORY', 'CREATE', 'ACTIVE'),
@@ -53,9 +53,11 @@ VALUES
 ('PRODUCT_VIEW', 'PRODUCT', 'VIEW',   'ACTIVE'),
 ('PRODUCT_CREATE', 'PRODUCT', 'CREATE', 'ACTIVE'),
 ('PRODUCT_UPDATE', 'PRODUCT', 'UPDATE', 'ACTIVE'),
-('PRODUCT_DELETE', 'PRODUCT', 'DELETE', 'ACTIVE');
+('SELLER_ADD_PRODUCT', 'SELLER', 'CREATE', 'ACTIVE'),
+('PRODUCT_DELETE', 'PRODUCT', 'DELETE', 'ACTIVE'),
+('ADMIN_UPDATE_STATUS_PRODUCT', 'PRODUCT', 'UPDATE', 'ACTIVE');
 
-INSERT INTO role_permissions (role_id, permission_id)
+INSERT IGNORE INTO role_permissions (role_id, permission_id)
 VALUES
 (1, 1),  -- ADMIN -> CATEGORY_VIEW
 (1, 2),
@@ -64,22 +66,24 @@ VALUES
 (1, 5),  -- ADMIN -> Product_VIEW
 (1, 6),
 (1, 7),
-(1, 8),
+(1, 9),
+(1, 10),
 (2, 1), -- CUSTOMER -> CATEGORY_VIEW
+(3, 8),
 (3, 1); -- SELLER -> CATEGORY_VIEW
 
 
-INSERT INTO products (id, name, slug, description, status, created_at) VALUES
+INSERT IGNORE INTO products (id, name, slug, description, status, created_at) VALUES
 (1, 'Laptop Gaming ASUS ROG','laptop-gaming-asus-rog', 'Laptop gaming hiệu năng cao', 'APPROVED', NOW()),
 (2, 'Laptop Văn Phòng Dell','laptop-van-phong-dell', 'Laptop mỏng nhẹ cho văn phòng', 'APPROVED', NOW()),
 (3, 'Chuột Gaming Logitech','chuot-gaming-logitech', 'Chuột gaming RGB', 'APPROVED', NOW());
 
-INSERT INTO product_categories (product_id, category_id) VALUES
+INSERT IGNORE INTO product_categories (product_id, category_id) VALUES
 (1, 3), -- ASUS ROG → Gaming
 (2, 2), -- Dell → Laptop
 (3, 4); -- Chuột → Phụ kiện
 
-INSERT INTO product_variants (product_id, sku, price, stock, status) VALUES
+INSERT IGNORE INTO product_variants (product_id, sku, price, stock, status) VALUES
 -- ASUS ROG
 (1, 'ROG-I7-16GB', 35000000.00, 10, 'ACTIVE'),
 (1, 'ROG-I9-32GB', 45000000.00, 5,  'ACTIVE'),
@@ -92,7 +96,7 @@ INSERT INTO product_variants (product_id, sku, price, stock, status) VALUES
 (3, 'LOGI-G102',   450000.00,   100, 'ACTIVE'),
 (3, 'LOGI-G502',   1200000.00,  50,  'ACTIVE');
 
-INSERT INTO product_variant_attributes (variant_id, attribute_name, attribute_value) VALUES
+INSERT IGNORE INTO product_variant_attributes (variant_id, attribute_name, attribute_value) VALUES
 -- ASUS ROG
 (1, 'CPU', 'Intel i7'),
 (1, 'RAM', '16GB'),
@@ -105,12 +109,12 @@ INSERT INTO product_variant_attributes (variant_id, attribute_name, attribute_va
 (4, 'CPU', 'Intel i7'),
 (4, 'RAM', '16GB');
 
-INSERT INTO images (url, alt_text, product_id) VALUES
+INSERT IGNORE INTO images (url, alt_text, product_id) VALUES
 ('asus-rog-thumb.jpg', 'ASUS ROG Laptop', 1),
 ('dell-laptop-thumb.jpg', 'Dell Office Laptop', 2),
 ('logitech-mouse-thumb.jpg', 'Logitech Gaming Mouse', 3);
 
-INSERT INTO images (url, alt_text, variant_id) VALUES
+INSERT IGNORE INTO images (url, alt_text, variant_id) VALUES
 -- ASUS ROG
 ('rog-i7.jpg', 'ASUS ROG i7', 1),
 ('rog-i9.jpg', 'ASUS ROG i9', 2),
@@ -125,17 +129,17 @@ INSERT INTO images (url, alt_text, variant_id) VALUES
 ----------------------------------check cart
 
 
-INSERT INTO products (id, name, slug, description, status, created_at) VALUES
+INSERT IGNORE INTO products (id, name, slug, description, status, created_at) VALUES
 (10,'Áo thun nam','ao-thun-nam','Áo thun cotton 100%','APPROVED', NOW());
 
 
 
-INSERT INTO product_variants (product_id, sku, price, stock, status) VALUES
+INSERT IGNORE INTO product_variants (product_id, sku, price, stock, status) VALUES
 (10, 'ATN-BLACK-M', 199000, 20, 'ACTIVE'),
 (10, 'ATN-BLACK-L', 199000, 5,  'ACTIVE'),
 ( 10, 'ATN-WHITE-M', 189000, 0,  'ACTIVE'); -- hết hàng để test
 
-INSERT INTO product_variant_attributes (variant_id, attribute_name, attribute_value)
+INSERT IGNORE INTO product_variant_attributes (variant_id, attribute_name, attribute_value)
 VALUES
 -- BLACK - M
 (4, 'Color', 'Black'),
@@ -149,13 +153,13 @@ VALUES
 (6, 'Color', 'White'),
 (6, 'Size', 'M');
 
-INSERT INTO cart_items (id, user_id, variant_id, quantity, created_at)
+INSERT IGNORE INTO cart_items (id, user_id, variant_id, quantity, created_at)
 VALUES
 (1, 2, 4, 2, NOW()),  -- còn hàng
 (2, 2, 5, 1, NOW()),  -- gần hết hàng
 (3, 2, 6, 1, NOW());  -- hết hàng (test invalid cart)
 
-INSERT INTO customer_addresses
+INSERT IGNORE INTO customer_addresses
 (user_id, detail_address, district, province, ward, phone, receiver_name, is_default)
 VALUES
 (2, '123 Nguyen Trai', 'District 1', 'Ho Chi Minh', 'Ben Thanh', '0909123456', 'Nguyen Van A', true);
