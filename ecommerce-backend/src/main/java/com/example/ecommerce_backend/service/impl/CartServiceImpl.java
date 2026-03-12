@@ -121,22 +121,22 @@ public class CartServiceImpl implements CartService {
     // UPDATE QUANTITY
     // =========================
     @Override
-    public CartResponse updateQuantity(Long cartItemId, UpdateCartItemRequest quantity) {
+    public CartResponse updateQuantity(UpdateCartItemRequest request) {
 
-        if (quantity.getQuantity() <= 0) {
-            return removeItem(cartItemId);
+        if (request.getQuantity() <= 0) {
+            return removeItem(request.getCartItemId());
         }
 
-        CartItem item = cartItemRepository.findById(cartItemId)
+        CartItem item = cartItemRepository.findById(request.getCartItemId())
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
 
         ProductVariant v = item.getVariant();
 
-        if (quantity.getQuantity() > v.getStock()) {
+        if (request.getQuantity() > v.getStock()) {
             throw new RuntimeException("Not enough stock");
         }
 
-        item.setQuantity(quantity.getQuantity());
+        item.setQuantity(request.getQuantity());
         item.setUpdatedAt(LocalDateTime.now());
 
         return getMyCart();

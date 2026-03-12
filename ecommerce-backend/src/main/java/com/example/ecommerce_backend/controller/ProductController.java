@@ -29,7 +29,7 @@ public class ProductController {
     }
 
 
-    @PatchMapping("/products/{id}/status")
+    @PatchMapping("/{id}/status")
     @PreAuthorize("hasAuthority('ADMIN_UPDATE_STATUS_PRODUCT')")
     public ResponseEntity<?> updateStatus(
             @PathVariable Integer id,

@@ -1,8 +1,10 @@
 package com.example.ecommerce_backend.controller;
 
 
+import com.example.ecommerce_backend.dto.request.order.UpdateOrderStatusRequest;
 import com.example.ecommerce_backend.dto.request.product.CreateProductRequest;
 import com.example.ecommerce_backend.dto.request.seller.RegisterSellerRequest;
+import com.example.ecommerce_backend.dto.response.order.SellerOrderResponse;
 import com.example.ecommerce_backend.service.ProductService;
 import com.example.ecommerce_backend.service.SellerService;
 import jakarta.validation.Valid;
@@ -13,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/seller")
@@ -51,5 +55,26 @@ public class SellerController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body("Product created successfully");
+    }
+
+    @GetMapping("/view_order")
+    @PreAuthorize("hasAuthority('SELLER_ADD_PRODUCT')")
+    public List<SellerOrderResponse> getSellerOrders() {
+
+        return sellerService.getSellerOrders();
+
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAuthority('SELLER_ADD_PRODUCT')")
+    public SellerOrderResponse updateStatus(
+            @PathVariable Long id,
+            @RequestBody UpdateOrderStatusRequest request
+    ) {
+
+        return sellerService.updateOrderStatus(
+                id,
+                request.getStatus()
+        );
     }
 }

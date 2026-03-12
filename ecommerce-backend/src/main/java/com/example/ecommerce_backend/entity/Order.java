@@ -28,6 +28,12 @@ public class Order {
     @JoinColumn(name = "address_id", nullable = false)
     private CustomerAddress address;
 
+    @Column(nullable = false, unique = true)
+    private String orderCode;
+
+    @Column(nullable = false)
+    private BigDecimal shippingFee = BigDecimal.ZERO;
+
     @Column(nullable = false)
     private BigDecimal total;
 
@@ -46,12 +52,15 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    private LocalDateTime updatedAt;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
 
     @PrePersist
     void prePersist() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public enum PaymentMethod {

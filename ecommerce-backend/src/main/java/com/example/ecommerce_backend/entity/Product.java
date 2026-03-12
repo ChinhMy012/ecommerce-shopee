@@ -39,6 +39,7 @@ public class Product {
 
     private LocalDateTime createdAt;
 
+    @Column(unique = true, nullable = false)
     private String slug;
 
     private LocalDateTime updatedAt;

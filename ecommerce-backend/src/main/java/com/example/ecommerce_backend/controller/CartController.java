@@ -44,8 +44,7 @@ public class CartController {
 
     @PatchMapping("/items/{id}")
     public ResponseEntity<?> updateQuantity(
-            @PathVariable Long id,
-            @RequestBody UpdateCartItemRequest quantity
+            @RequestBody UpdateCartItemRequest request
     ) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -62,7 +61,7 @@ public class CartController {
             ));
         }
 
-        CartResponse res = cartService.updateQuantity(id, quantity);
+        CartResponse res = cartService.updateQuantity(request);
         return ResponseEntity.ok(res);
     }
 

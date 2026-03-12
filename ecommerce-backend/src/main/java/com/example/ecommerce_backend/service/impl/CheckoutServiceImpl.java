@@ -76,11 +76,6 @@ public class CheckoutServiceImpl implements CheckoutService {
                     .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
 
             orderTotal = orderTotal.add(subtotal);
-
-            // trừ kho ngay tại đây
-            variant.setStock(
-                    variant.getStock() - cartItem.getQuantity()
-            );
         }
 
         // Tạo Order
@@ -89,7 +84,9 @@ public class CheckoutServiceImpl implements CheckoutService {
                 .address(address)
                 .total(orderTotal)
                 .status(Order.OrderStatus.PENDING)
+                .orderCode("ORD-" + System.currentTimeMillis())
                 .paymentMethod(request.getPaymentMethod())
+                .shippingFee(BigDecimal.ZERO)
                 .paymentStatus(Order.PaymentStatus.UNPAID)
                 .items(new ArrayList<>())
                 .build();
@@ -125,7 +122,11 @@ public class CheckoutServiceImpl implements CheckoutService {
         }
 
         // Clear cart
-        cartItemRepository.deleteAll(cartItems);
+        cartItemRepository.deleteAllById(
+                cartItems.stream()
+                        .map(CartItem::getId)
+                        .toList()
+        );
 
         return new CheckoutResponse(
                 order.getId(),

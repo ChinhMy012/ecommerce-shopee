@@ -18,6 +18,7 @@ public class ProductVariant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String sku;
     private BigDecimal price;
     private Integer stock;
