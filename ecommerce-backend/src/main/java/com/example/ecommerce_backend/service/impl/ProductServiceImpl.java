@@ -94,6 +94,7 @@ public class ProductServiceImpl implements ProductService {
                 .findBySlugAndStatus(slug, Product.ProductStatus.APPROVED)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
+
         Map<String, Set<String>> attributeMap = new LinkedHashMap<>();
         List<VariantResponse> variantResponses = new ArrayList<>();
 
@@ -164,7 +165,9 @@ public class ProductServiceImpl implements ProductService {
         res.setName(product.getName());
         res.setDescription(product.getDescription());
         res.setSlug(product.getSlug());
-
+        res.setShopName(product.getShop().getName());
+        res.setShopDescription(product.getShop().getDescription());
+        res.setShopId(product.getShop().getId());
         // COPY product images
         List<Image> productImages = new ArrayList<>(product.getImages());
 

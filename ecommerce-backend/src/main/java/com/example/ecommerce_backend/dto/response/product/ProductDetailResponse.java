@@ -19,4 +19,8 @@ public class ProductDetailResponse {
 
     private List<AttributeResponse> attributes;
     private List<VariantResponse> variants;
+
+    private String shopName;
+    private String shopDescription;
+    private Long shopId;
 }
