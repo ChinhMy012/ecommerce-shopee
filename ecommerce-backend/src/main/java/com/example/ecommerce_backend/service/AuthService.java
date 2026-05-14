@@ -15,4 +15,7 @@ public interface AuthService {
      * Đăng nhập, trả về accessToken + refreshToken (JWT)
      */
     AuthResponse login(LoginRequest request);
+
+    AuthResponse refreshToken(String refreshToken); // Phương thức mới
+    void logout(String accessToken, String refreshToken);
 }

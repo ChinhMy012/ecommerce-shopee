@@ -1,5 +1,6 @@
 package com.example.ecommerce_backend.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +28,7 @@ public interface JwtService {
      */
     boolean isTokenValid(String token, String username);
 
+    Date extractExpiration(String token);
 
 
 

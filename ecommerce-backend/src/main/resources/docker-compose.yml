@@ -13,5 +13,13 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+  # Thêm Redis vào đây
+  redis:
+    image: redis:7.0-alpine
+    container_name: ecommerce_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
 volumes:
   mysql_data:
